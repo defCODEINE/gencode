@@ -19,7 +19,7 @@ from Bio.Align import MultipleSeqAlignment
 
 
 def parse():
-    """Разбивает файл с комплексным геномом семейства вируса. Записывает отдельные ДНК в fasta-файлы.
+    """Разбивает файл с ДНК и записывает в отдельные fasta-файлы.
     """
     sequence_data = open('C:/Users/Vladi/Desktop/3.06/main.fasta').read()
     mas=sequence_data.split(">gb:")
@@ -44,7 +44,7 @@ def parse():
     
     
  def definision():
-    """Заполняет профиль по ней.
+    """Заполняет профиль по каждому ДНК
     """
     for i in range(1,5):
         one=SeqIO.read('C:/Users/Vladi/Desktop/3.06/'+str(i)+'.fasta', "fasta") 
@@ -63,7 +63,7 @@ def parse():
       
             
 def comparison():
-    """Попарно сравнивает fasta-файлы с ДНК. Результат оценки записывает в DataFrame и сохраняет в csv
+    """Попарно сравнивает fasta-файлы. Результат оценки записывает в DataFrame и сохраняет в csv.
     """
     with open ('C:/Users/Vladi/Desktop/3.06/tets2.csv', 'w') as free:
         fieldnames = ['DNA_name','identifity','index','procent_identifity', 'GC_content_pair']
