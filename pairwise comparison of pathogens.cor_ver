@@ -1,0 +1,92 @@
+import numpy as np 
+import pandas as pd 
+import matplotlib.pyplot as plt
+%matplotlib inline
+import seaborn as sns
+import csv 
+from Bio import SeqIO
+from Bio.pairwise2 import format_alignment
+from Bio import pairwise2
+from Bio.Alphabet import generic_dna
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio import Align
+from Bio import AlignIO
+from Bio.Alphabet import generic_dna
+from Bio.SeqRecord import SeqRecord
+from Bio.Align import MultipleSeqAlignment
+
+
+
+def parse():
+    """Разбивает файл с комплексным геномом семейства вируса. Записывает отдельные ДНК в fasta-файлы.
+    """
+    sequence_data = open('C:/Users/Vladi/Desktop/3.06/main.fasta').read()
+    mas=sequence_data.split(">gb:")
+    n=len(mas)
+    a=n+1
+    for i in range(1,n):
+        while i<n:
+            MyFile=open('C:/Users/Vladi/Desktop/3.06/'+str(i)+'.fasta', 'w')
+            perem=[mas[i]]
+            for element in perem:
+                MyFile.write(">")
+                MyFile.write(element)
+                #MyFile.write('\n')
+            MyFile.close()        
+            i+=1
+        
+        else:
+            print("ok")
+            break
+    return
+    
+    
+    
+ def definision():
+    """Заполняет профиль по ней.
+    """
+    for i in range(1,5):
+        one=SeqIO.read('C:/Users/Vladi/Desktop/3.06/'+str(i)+'.fasta', "fasta") 
+        ligh=len(one)
+        
+        mRNA_one=one.seq.transcribe()
+        amino_one=mRNA_one.translate(table=1, cds=False) 
+        proteins = amino_one.split('*')
+        i+=1
+        
+        sharm_charakhter={'name':(i), 'index':[0], 'ligh':(ligh)}
+        data={i: (proteins)} 
+        df = pd.DataFrame(data)
+        print(df)
+      
+      
+            
+def comparison():
+    """Попарно сравнивает fasta-файлы с ДНК. Результат оценки записывает в DataFrame и сохраняет в csv
+    """
+    with open ('C:/Users/Vladi/Desktop/3.06/tets2.csv', 'w') as free:
+        fieldnames = ['DNA_name','identifity','index','procent_identifity', 'GC_content_pair']
+        writer = csv.DictWriter(free, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for j in range(1,4):
+            one=SeqIO.read('C:/Users/Vladi/Desktop/3.06/'+str(j)+'.fasta', "fasta")
+            for i in range(1,4):
+                two=SeqIO.read('C:/Users/Vladi/Desktop/3.06/'+str(i)+'.fasta', "fasta")
+                DNA_name=one.id.split("|")[0] + "_&_" + two.id.split("|")[0]
+                if one.id.split("|")[0]==two.id.split("|")[0]:
+                    DNA_name="None"
+                identifity=pairwise2.align.globalxx(one.seq, two.seq, score_only=True)
+                count_score=len(one) if one.seq > two.seq else len(two)
+                procent_identifity=(100*identifity)/count_score
+                
+                GC_content_one=one.seq.count("GC")*100//len(one)
+                GC_content_two=two.seq.count("GC")*100//len(two)
+                GC_content_pair=GC_content_one-GC_content_two if GC_content_one>GC_content_two else GC_content_two-GC_content_one
+                
+                i+=1
+                writer.writerow({'DNA_name':(DNA_name), 'identifity':(identifity), 'index':[0], 'procent_identifity':(procent_identifity),'GC_content_pair':(GC_content_pair)})
+                
+                
+    return
